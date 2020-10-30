@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import TitleBar from './Components/TitleBar/index'
+import { StateProvider } from './state'
+import InputArea from './Components/InputArea/index';
+import Display from './Components/Display/index';
+import { Container, Footer } from './styles';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+	return (
+		<StateProvider>
+      <Container>
+        <TitleBar />
+        <InputArea />
+        <Display />
+        <Footer>Made by Rodney Lafuente Mercado for Math 121</Footer>
+      </Container>
+		</StateProvider>
+  )
 }
 
-export default App;
+export default App
