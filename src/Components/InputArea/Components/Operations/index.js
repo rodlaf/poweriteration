@@ -178,7 +178,6 @@ const Operations = () => {
             <Button onClick={() => Rank()}>Determinant</Button>
             <Button onClick={() => Rank()}>Eigenvalues</Button>
             <Button onClick={() => Rank()}>Eigenvectors</Button>
-            <Button onClick={() => Rank()}>Transpose</Button>
             <Button onClick={() => Rank()}>Diagonal</Button>
             <Button onClick={() => Multiply()}>x</Button>
             <Button onClick={() => Add()}>+</Button>
