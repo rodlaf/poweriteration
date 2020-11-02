@@ -15,7 +15,7 @@ const Matrix = ({ id }) => {
             alert("Please input real numbers only");
         }
         if (!value === "-") {
-            value = parseInt(value);
+            value = parseFloat(value);
         }
         let newMat = state.mats[id].map(inner => inner.slice());
         newMat[x][y] = value;

@@ -2,10 +2,25 @@ import React from 'react';
 import { useStateValue } from '../../../../state';
 import { Container, Button } from './styles';
 
+
 const Operations = () => {
     const [state, setState] = useStateValue();
 
+    const cleanMat = (A) => {
+        var rows = A.length;
+        var columns = A[0].length;
+
+        var i;
+        for (i = 0; i < rows; ++i) {
+            var j;
+            for (j = 0; j < columns; ++j) {
+                A[i][j] = parseFloat(parseFloat(A[i][j]).toFixed(8));
+            }
+        }
+    }
+
     const latexOfMat = (mat) => {
+        cleanMat(mat);
         var str = ``;
         mat.forEach(row => {
             row.forEach(
@@ -17,6 +32,8 @@ const Operations = () => {
         str = str.slice(0, -2);
         return String.raw`\left( \begin{array}{ccc}` + str + String.raw`\end{array} \right)`;
     }
+
+    
 
     const Switch = () => {
         let tempMatA = state.mats['A'].map(inner => inner.slice());
@@ -34,7 +51,6 @@ const Operations = () => {
 
         if (w_A !== h_B) {
             alert('Not compatible for multiplication');
-            return;
         }
         
         var i;
@@ -131,52 +147,50 @@ const Operations = () => {
 		setState({...state, display: [str, ...state.display]});
     }
 
-    const rref = (M) => {
-
-        var w_M = M[0].length;
-        var h_M = M.length;
-      
-        const swapRows = (M, r1, r2) => {
-            var temp = M[r1];
-            M[r1] = M[r2];
-            M[r2] = temp;
-        }
-
+    const rref = (A) => {
+        var rows = A.length;
+        var columns = A[0].length;
+        
         var lead = 0;
-        var r;
-        loop:
-            for (r = 0; r < h_M; ++r) {
-                if (w_M <= lead) {
-                    break loop;
+        for (var k = 0; k < rows; k++) {
+            if (columns <= lead) return;
+            
+            var i = k;
+            while (A[i][lead] === 0) {
+                i++;
+                if (rows === i) {
+                    i = k;
+                    lead++;
+                    if (columns === lead) return;
                 }
-                var i = r;
-                while (M[i][lead] === 0) {
-                    ++i;
-                    if (h_M == i) {
-                        i = r;
-                        ++lead;
-                        if (w_M = lead) {
-                            break loop;
-                        }
-                    }
-                }
-                swapRows(M, i, r);
-                if (M[r][lead] != 0) {
-                    M[r].forEach((x, ind) => M[r][ind] = x / M[r][lead]);
-                }
-                var i;
-                for (i = 0; i < h_M; ++i) {
-                    if (i != r) {
-                        M[i].forEach((x, ind) => M[i][ind] = x - (M[i][lead] * M[r][ind]))
-                    }
-                }
-                ++lead;
             }
+            var irow = A[i], krow = A[k];
+            A[i] = krow;
+            A[k] = irow;
+             
+            var val = A[k][lead];
+            for (var j = 0; j < columns; j++) {
+                A[k][j] /= val;
+            }
+             
+            for (var i = 0; i < rows; i++) {
+                if (i === k) continue;
+                val = A[i][lead];
+                for (var j = 0; j < columns; j++) {
+                    A[i][j] -= val * A[k][j];
+                }
+            }
+            lead++;
+        }
+        return A;
     }
+
+    
 
     const doRREF = () => {
 
         var M = state.mats['A'].map(inner => inner.slice());
+
         rref(M);
 
         var str = `$$` 
@@ -202,6 +216,30 @@ const Operations = () => {
         });
 
         rref(M);
+
+        function arraysEqual(a, b) {
+            if (a === b) return true;
+            if (a == null || b == null) return false;
+            if (a.length !== b.length) return false;
+            for (var i = 0; i < a.length; ++i) {
+              if (a[i] !== b[i]) return false;
+            }
+            return true;
+          }
+        
+        var isInv = M.reduce((acc, cur, idx) => {
+            var toAdd = new Array(w_M).fill(0);
+            toAdd[idx] = 1;
+            return acc && (arraysEqual(cur.slice(0,w_M), toAdd));
+        }, true);
+
+        if (!isInv) {
+            alert("Not invertible")
+        }
+
+        M.forEach((_, ind) => {
+            M[ind] = M[ind].slice(w_M);
+        });
 
         var str = `$$` 
             + String.raw`\mathrm{inverse}`
@@ -238,6 +276,25 @@ const Operations = () => {
 		setState({...state, display: [str, ...state.display]});
     }
 
+    const det = (M) => 
+        M.length == 1 ? M[0][0] :
+        M.length == 2 ? M[0][0] * M[1][1] - M[0][1] * M[1][0] :
+        M[0].reduce((r,e,i) => 
+            r + (-1) ** (i+2) * e * det(M.slice(1).map(c => 
+            c.filter((_,j) => i != j))), 0)
+
+    const Determinant = () => {
+
+        var str = `$$` 
+            + String.raw`\mathrm{det}`
+            + latexOfMat(state.mats['A']) 
+            + `=`
+            + det(state.mats['A'])
+            + `$$`;
+
+		setState({...state, display: [str, ...state.display]});
+    }
+
     const clear = () => (
         setState({...state, display: []})
     );
@@ -248,9 +305,7 @@ const Operations = () => {
             <Button onClick={() => doRREF()}>rref</Button>
             <Button onClick={() => Rank()}>rank</Button>
             <Button onClick={() => Inverse()}>inv</Button>
-            <Button onClick={() => Rank()}>det</Button>
-            <Button onClick={() => Rank()}>eig</Button>
-            <Button onClick={() => Rank()}>diag</Button>
+            <Button onClick={() => Determinant()}>det</Button>
             <Button onClick={() => Multiply()}>x</Button>
             <Button onClick={() => Add()}>+</Button>
             <Button onClick={() => Subtract()}>-</Button>
