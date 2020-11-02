@@ -11,10 +11,12 @@ const Matrix = ({ id }) => {
     useEffect(() => storage.setItem('mats', JSON.stringify(state.mats)));
 
     const setCell = (x, y, value) => {
-        if (value != "" && isNaN(value)) {
+        if (value != "" && value != "-" && isNaN(value)) {
             alert("Please input real numbers only");
         }
-        value = parseInt(value);
+        if (!value === "-") {
+            value = parseInt(value);
+        }
         let newMat = state.mats[id].map(inner => inner.slice());
         newMat[x][y] = value;
         setState({...state, mats: {...state.mats, [id]: newMat}});

@@ -24,7 +24,6 @@ const Operations = () => {
         setState({...state, mats: {B: tempMatA, A: tempMatB}});
     }
 
-
     const Multiply = () => {
         var P = [];
 
@@ -59,7 +58,7 @@ const Operations = () => {
             + latexOfMat(state.mats['B']) 
             + `=`
             + latexOfMat(P) 
-        + `$$`;
+            + `$$`;
 
 		setState({...state, display: [str, ...state.display]});
     }
@@ -132,36 +131,109 @@ const Operations = () => {
 		setState({...state, display: [str, ...state.display]});
     }
 
-    const Rank = () => {
-        var P = [];
+    const rref = (M) => {
 
-        var w_A = state.mats['A'][0].length;
-        var h_A = state.mats['A'].length;
-        var w_B = state.mats['B'][0].length;
-        var h_B = state.mats['B'].length;
-
-        if (w_A !== w_B || h_A !== h_B) {
-            alert('Not compatible for subtraction');
-            return;
+        var w_M = M[0].length;
+        var h_M = M.length;
+      
+        const swapRows = (M, r1, r2) => {
+            var temp = M[r1];
+            M[r1] = M[r2];
+            M[r2] = temp;
         }
-        
-        var i;
-        for (i = 0; i < h_A; i++) {
-            var row = [];
-            var j;
-            for (j = 0; j < w_A; j++) {
-                row.push(state.mats['A'][i][j] + state.mats['B'][i][j]);
-            };
-            P.push(row);
+
+        var lead = 0;
+        var r;
+        loop:
+            for (r = 0; r < h_M; ++r) {
+                if (w_M <= lead) {
+                    break loop;
+                }
+                var i = r;
+                while (M[i][lead] === 0) {
+                    ++i;
+                    if (h_M == i) {
+                        i = r;
+                        ++lead;
+                        if (w_M = lead) {
+                            break loop;
+                        }
+                    }
+                }
+                swapRows(M, i, r);
+                if (M[r][lead] != 0) {
+                    M[r].forEach((x, ind) => M[r][ind] = x / M[r][lead]);
+                }
+                var i;
+                for (i = 0; i < h_M; ++i) {
+                    if (i != r) {
+                        M[i].forEach((x, ind) => M[i][ind] = x - (M[i][lead] * M[r][ind]))
+                    }
+                }
+                ++lead;
+            }
+    }
+
+    const doRREF = () => {
+
+        var M = state.mats['A'].map(inner => inner.slice());
+        rref(M);
+
+        var str = `$$` 
+            + String.raw`\mathrm{rref}`
+            + latexOfMat(state.mats['A']) 
+            + `=`
+            + latexOfMat(M)
+            + `$$`;
+
+		setState({...state, display: [str, ...state.display]});
+    }
+    
+    const Inverse = () => {
+        var M = state.mats['A'].map(inner => inner.slice());
+
+        var h_M = M.length;
+        var w_M = M.length;
+
+        M.forEach((_, ind) => {
+            var toAdd = new Array(w_M).fill(0);
+            toAdd[ind] = 1;
+            M[ind] = M[ind].concat(toAdd)
+        });
+
+        rref(M);
+
+        var str = `$$` 
+            + String.raw`\mathrm{inverse}`
+            + latexOfMat(state.mats['A']) 
+            + `=`
+            + latexOfMat(M)
+            + `$$`;
+
+		setState({...state, display: [str, ...state.display]});
+    }
+
+    const Rank = () => {
+
+        var M = state.mats['A'].map(inner => inner.slice());
+
+        rref(M);
+
+        var h_M = M.length;
+        var sol = 0;
+        var r;
+        for (r = 0; r < h_M; ++r) {
+            if (M[r].reduce((acc, cum) => acc || cum)) {
+                ++sol;
+            }
         }
 
         var str = `$$` 
+            + String.raw`\mathrm{rank}`
             + latexOfMat(state.mats['A']) 
-            + String.raw`+` 
-            + latexOfMat(state.mats['B']) 
             + `=`
-            + latexOfMat(P) 
-        + `$$`;
+            + sol
+            + `$$`;
 
 		setState({...state, display: [str, ...state.display]});
     }
@@ -172,17 +244,17 @@ const Operations = () => {
 
 	return (
         <Container>
-            <Button onClick={() => Switch()}>Switch</Button>
-            <Button onClick={() => Rank()}>Rank</Button>
-            <Button onClick={() => Rank()}>Inverse</Button>
-            <Button onClick={() => Rank()}>Determinant</Button>
-            <Button onClick={() => Rank()}>Eigenvalues</Button>
-            <Button onClick={() => Rank()}>Eigenvectors</Button>
-            <Button onClick={() => Rank()}>Diagonal</Button>
+            <Button onClick={() => Switch()}>switch</Button>
+            <Button onClick={() => doRREF()}>rref</Button>
+            <Button onClick={() => Rank()}>rank</Button>
+            <Button onClick={() => Inverse()}>inv</Button>
+            <Button onClick={() => Rank()}>det</Button>
+            <Button onClick={() => Rank()}>eig</Button>
+            <Button onClick={() => Rank()}>diag</Button>
             <Button onClick={() => Multiply()}>x</Button>
             <Button onClick={() => Add()}>+</Button>
             <Button onClick={() => Subtract()}>-</Button>
-            <Button onClick={() => clear()}>Clear</Button>
+            <Button onClick={() => clear()}>clear</Button>
         </Container>
 	);
 }
