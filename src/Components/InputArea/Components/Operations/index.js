@@ -51,32 +51,34 @@ const Operations = () => {
 
         if (w_A !== h_B) {
             alert('Not compatible for multiplication');
+        } else {
+            var i;
+            for (i = 0; i < h_A; i++) {
+                var row = [];
+                var j;
+                for (j = 0; j < w_B; j++) {
+                    var val = 0;
+                    var h;
+                    for (h = 0; h < w_A; h++) {
+                        val += state.mats['A'][i][h] * state.mats['B'][h][j];
+                    }
+                    row.push(val);
+                };
+                P.push(row);
+            }
+    
+            var str = `$$` 
+                + latexOfMat(state.mats['A']) 
+                + String.raw`\cdot` 
+                + latexOfMat(state.mats['B']) 
+                + `=`
+                + latexOfMat(P) 
+                + `$$`;
+    
+            setState({...state, display: [str, ...state.display]});
         }
         
-        var i;
-        for (i = 0; i < h_A; i++) {
-            var row = [];
-            var j;
-            for (j = 0; j < w_B; j++) {
-                var val = 0;
-                var h;
-                for (h = 0; h < w_A; h++) {
-                    val += state.mats['A'][i][h] * state.mats['B'][h][j];
-                }
-                row.push(val);
-            };
-            P.push(row);
-        }
 
-        var str = `$$` 
-            + latexOfMat(state.mats['A']) 
-            + String.raw`\cdot` 
-            + latexOfMat(state.mats['B']) 
-            + `=`
-            + latexOfMat(P) 
-            + `$$`;
-
-		setState({...state, display: [str, ...state.display]});
     }
 
     const Subtract = () => {
@@ -235,20 +237,22 @@ const Operations = () => {
 
         if (!isInv) {
             alert("Not invertible")
+        } else {
+            M.forEach((_, ind) => {
+                M[ind] = M[ind].slice(w_M);
+            });
+    
+            var str = `$$` 
+                + String.raw`\mathrm{inverse}`
+                + latexOfMat(state.mats['A']) 
+                + `=`
+                + latexOfMat(M)
+                + `$$`;
+    
+            setState({...state, display: [str, ...state.display]});
         }
 
-        M.forEach((_, ind) => {
-            M[ind] = M[ind].slice(w_M);
-        });
 
-        var str = `$$` 
-            + String.raw`\mathrm{inverse}`
-            + latexOfMat(state.mats['A']) 
-            + `=`
-            + latexOfMat(M)
-            + `$$`;
-
-		setState({...state, display: [str, ...state.display]});
     }
 
     const Rank = () => {
@@ -285,14 +289,19 @@ const Operations = () => {
 
     const Determinant = () => {
 
-        var str = `$$` 
+        if (state.mats['A'].length != state.mats['A'][0].length) {
+            alert("Not a square matrix");
+        } else {
+            var str = `$$` 
             + String.raw`\mathrm{det}`
             + latexOfMat(state.mats['A']) 
             + `=`
             + det(state.mats['A'])
             + `$$`;
 
-		setState({...state, display: [str, ...state.display]});
+            setState({...state, display: [str, ...state.display]});
+        }
+
     }
 
     const clear = () => (

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useStateValue } from '../../../../state';
 import RowSizer from './Components/RowSizer/index';
 import ColSizer from './Components/ColSizer/index';
-import { TR, Body, Caption, Table, Input } from './styles'
+import { TR, Body, Caption, Table, Input, Container } from './styles'
 
 const Matrix = ({ id }) => {
 	const [state, setState] = useStateValue();
@@ -35,7 +35,7 @@ const Matrix = ({ id }) => {
 	return (
             <Table id={id}>
                 <Caption>{id}</Caption>
-                <Body>{Cells} </Body>
+                <Body> {Cells} </Body>
                 <RowSizer id={id}/>
                 <ColSizer id={id}/> 
             </Table> 
