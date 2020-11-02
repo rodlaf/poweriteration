@@ -235,7 +235,7 @@ const Operations = () => {
             return acc && (arraysEqual(cur.slice(0,w_M), toAdd));
         }, true);
 
-        if (!isInv) {
+        if (!isInv || state.mats['A'].length != state.mats['A'][0].length) {
             alert("Not invertible")
         } else {
             M.forEach((_, ind) => {
