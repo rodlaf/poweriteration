@@ -5,7 +5,7 @@ export const StateContext = createContext();
 const storage = window.localStorage;
 
 const initialState = {
-    mats: storage.getItem('mats') === null ? {A: [[0, 0], [0, 0]], B: [[0, 0], [0, 0]]} : JSON.parse(storage.getItem('mats')),
+    mats: storage.getItem('mats') === null ? {A: [[NaN, NaN], [NaN, NaN]], B: [[NaN, NaN], [NaN, NaN]]} : JSON.parse(storage.getItem('mats')),
     display: [],
 };
 

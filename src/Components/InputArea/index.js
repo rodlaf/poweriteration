@@ -7,8 +7,7 @@ import { Container } from './styles';
 const InputArea = () => (
     <Container>
         <Matrix id={"A"}/>
-        <Operations> </ Operations>
-        <Matrix id={"B"}/>
+        <Operations />
     </Container>
 )
 

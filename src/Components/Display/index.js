@@ -3,7 +3,7 @@ import { useStateValue } from '../../state';
 import { Container, Item } from './styles';
 
 const Display = () => {
-    const [state, setState] = useStateValue();
+    const [state, ] = useStateValue();
 
     var Latex = require('react-latex');
 

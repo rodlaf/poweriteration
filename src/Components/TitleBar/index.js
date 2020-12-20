@@ -4,7 +4,7 @@ import { Title } from './styles';
 
 const TitleBar = () => (
     <Bar>
-        <Title>Matrix Library</Title>
+        <Title>Power Iteration Algorithm</Title>
     </Bar>
 )
 

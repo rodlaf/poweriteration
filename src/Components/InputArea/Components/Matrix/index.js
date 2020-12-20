@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useStateValue } from '../../../../state';
-import RowSizer from './Components/RowSizer/index';
-import ColSizer from './Components/ColSizer/index';
-import { TR, Body, Caption, Table, Input, Container } from './styles'
+import DimSizer from './Components/DimSizer/index';
+import { TR, Body, Caption, Table, Input } from './styles'
 
 const Matrix = ({ id }) => {
 	const [state, setState] = useStateValue();
@@ -11,12 +10,6 @@ const Matrix = ({ id }) => {
     useEffect(() => storage.setItem('mats', JSON.stringify(state.mats)));
 
     const setCell = (x, y, value) => {
-        if (value != "" && value != "-" && isNaN(value)) {
-            alert("Please input real numbers only");
-        }
-        if (!value === "-") {
-            value = parseFloat(value);
-        }
         let newMat = state.mats[id].map(inner => inner.slice());
         newMat[x][y] = value;
         setState({...state, mats: {...state.mats, [id]: newMat}});
@@ -34,10 +27,8 @@ const Matrix = ({ id }) => {
     
 	return (
             <Table id={id}>
-                <Caption>{id}</Caption>
-                <Body> {Cells} </Body>
-                <RowSizer id={id}/>
-                <ColSizer id={id}/> 
+                <Body>{Cells} </Body>
+                <DimSizer id={id}/>
             </Table> 
 		
 	);
